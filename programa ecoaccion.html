@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoAcción</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&display=swap" rel="stylesheet">
+<style>
+* {margin:0; padding:0; box-sizing:border-box;}
+body {font-family:'Lora', serif; background:linear-gradient(180deg,#f4f1e3 0%,#e8e2d0 100%); color:#333;}
+
+/* Bienvenida */
+#bienvenida {position:fixed; top:0; left:0; width:100%; height:100%; background:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e') no-repeat center/cover; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white; text-align:center; z-index:1000; overflow:hidden;}
+#bienvenida::before {content:""; position:absolute; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.55);}
+#bienvenida-content {position:relative; z-index:1; animation:fadeIn 1.5s ease-in;}
+#bienvenida h1 {font-size:3.5rem; font-weight:700; margin-bottom:10px; text-shadow:2px 2px 8px rgba(0,0,0,0.4); animation:bounce 2s infinite;}
+#bienvenida h1:hover {transform: scale(1.05) rotate(-1deg);}
+#bienvenida p {font-size:1.4rem; margin-bottom:25px;}
+#bienvenida button {padding:15px 40px; font-size:1.2rem; background-color:#16a34a; color:white; border:none; border-radius:50px; cursor:pointer; box-shadow:0 4px 15px rgba(0,0,0,0.3); transition:all 0.3s ease;}
+#bienvenida button:hover {background-color:#22c55e; transform:scale(1.07);}
+@keyframes bounce {0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);} }
+@keyframes fadeIn {from{opacity:0;} to{opacity:1;}}
+
+/* Header */
+header {background:linear-gradient(to right,#5a4e3c,#8c7b5c,#b8a07d); color:#f5f0e1; text-align:center; padding:25px; box-shadow:0 3px 8px rgba(0,0,0,0.2); position:sticky; top:0; z-index:100;}
+header h1 {font-size:2.3rem; font-weight:700; display:flex; align-items:center; justify-content:center; gap:10px;}
+header nav {margin-top:15px;}
+header nav ul {list-style:none; display:flex; justify-content:center; flex-wrap:wrap; gap:15px;}
+header nav ul li {cursor:pointer;}
+header nav ul li a {
+  color: #f5f0e1;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+header nav ul li a:hover {
+  background: #dcd2b8;  
+  color: #5a4e3c;
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Secciones */
+section {display:none; padding:60px 20px; text-align:center; background:#fdfbf4; margin:25px auto; max-width:900px; border-radius:20px; box-shadow:0 4px 15px rgba(0,0,0,0.1);}
+section.active {display:block; animation:fadeIn 0.5s ease-in-out;}
+
+/* Tarjetas */
+.tarjetas {display:flex; justify-content:center; flex-wrap:wrap; gap:25px;}
+.tarjeta {background:#e6dfc9; border-radius:15px; padding:20px; width:250px; transition:all 0.3s ease, box-shadow 0.3s; box-shadow:0 3px 10px rgba(0,0,0,0.1);}
+.tarjeta:hover {background:#d6cba6; transform:translateY(-8px) scale(1.03); box-shadow:0 8px 20px rgba(0,0,0,0.2);}
+.tarjeta h3 {color:#5a4e3c; transition:transform 0.3s;}
+.tarjeta h3:hover {transform:scale(1.05);}
+
+/* Listas y tablas */
+.lista-basura {text-align:left; max-width:600px; margin:auto; padding:15px; background:#f3efe1; border-left:5px solid #8c7b5c; border-radius:8px; line-height:1.6;}
+.tabla-colores {margin:20px auto; border-collapse:collapse; width:90%; box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+.tabla-colores th, .tabla-colores td {border:1px solid #ccc; padding:12px; text-align:center;}
+.tabla-colores th {background:#8c7b5c; color:white; font-weight:600;}
+
+/* Cuestionario */
+.cuestionario label {display:block; margin:6px 0; cursor:pointer;}
+#nota {font-weight:bold; margin-top:10px; color:#5a4e3c;}
+
+/* Sopa de Letras */
+#sopaContainer {display:grid; grid-template-columns:repeat(17,30px); grid-gap:2px; margin:20px auto; max-width:fit-content;}
+.celda {width:30px; height:30px; display:flex; justify-content:center; align-items:center; background:#e8e2d0; border-radius:5px; cursor:pointer; font-weight:bold; user-select:none; transition:0.2s;}
+.celda:hover {background-color:#d6cba6;}
+.celda.encontrada {color:white;}
+#palabras-lista {list-style:none; padding:0; margin-bottom:10px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center;}
+#palabras-lista li {background:#e6dfc9; padding:5px 10px; border-radius:5px;}
+#palabras-lista li.encontrada {text-decoration:line-through;}
+
+footer {background:#5a4e3c; color:#f5f0e1; text-align:center; padding:20px; margin-top:30px; font-weight:500; letter-spacing:1px;}
+img {max-width:100%; border-radius:15px; margin:10px 0;}
+</style>
+</head>
+<body>
+
+<div id="bienvenida">
+    <div id="bienvenida-content">
+        <h1>Bienvenido a EcoAcción</h1>
+        <p>¡Juntos cuidamos nuestro planeta!</p>
+        <button onclick="ingresar()">Ingresar</button>
+    </div>
+</div>
+
+<div id="contenido" style="display:none;">
+<header>
+<h1>
+  <img src="file:///C:/Users/SIS%20INFORMATICOS/Pictures/Screenshots/Captura%20de%20pantalla%202025-10-22%20154421.png" 
+  alt="Logo EcoAcción" 
+  style="width:60px; height:60px; vertical-align:middle; margin-right:12px; border-radius:12px;">
+  EcoAcción
+</h1>
+<p>Pequeñas acciones hacen un gran cambio</p>
+<nav>
+<ul>
+<li><a onclick="mostrarSeccion('que-es-ecoaccion')">¿Qué es EcoAcción?</a></li>
+<li><a onclick="mostrarSeccion('que-es-reciclaje')">¿Qué es Reciclaje?</a></li>
+<li><a onclick="mostrarSeccion('3r')">Las 3R</a></li>
+<li><a onclick="mostrarSeccion('separacion')">Separar basura</a></li>
+<li><a onclick="mostrarSeccion('colores')">Colores de reciclaje</a></li>
+<li><a onclick="mostrarSeccion('ideas')">Ideas</a></li>
+<li><a onclick="mostrarSeccion('impacto')">Impacto</a></li>
+<li><a onclick="mostrarSeccion('cuestionario')">Cuestionario</a></li>
+<li><a onclick="mostrarSeccion('sopa-letras')">Sopa de Letras</a></li>
+<li><a onclick="mostrarSeccion('informacion')">Información</a></li>
+</ul>
+</nav>
+</header>
+
+<!-- Nueva Sección: ¿Qué es EcoAcción? -->
+<section id="que-es-ecoaccion" class="active">
+  <h2>🌿 ¿Qué es EcoAcción?</h2>
+  <img src="file:///C:/Users/SIS%20INFORMATICOS/Pictures/Screenshots/Captura%20de%20pantalla%202025-10-22%20154421.png" alt="Cuidando el planeta" style="width:80%; max-width:500px; border-radius:15px; margin:15px 0;">
+  <p>EcoAcción es un proyecto educativo y ambiental que busca concienciar a la comunidad sobre la importancia de cuidar nuestro planeta.</p>
+  <p>A través de acciones como el reciclaje, la separación de residuos y la reducción del consumo, EcoAcción promueve hábitos sostenibles y responsables.</p>
+  <p>Con pequeñas acciones diarias, cada persona puede contribuir a un mundo más limpio y saludable.</p>
+</section>
+
+<section id="que-es-reciclaje">
+<h2>♻️ ¿Qué es Reciclaje?</h2>
+<img src="https://media.airedesantafe.com.ar/p/bccd6ce9e0dbc6900eff4df68487c60c/adjuntos/268/imagenes/003/686/0003686441/1200x675/smart/que-significa-el-simbolo-del-reciclaje.png" alt="Reciclaje">
+<p>El reciclaje es un proceso vital para la conservación del medio ambiente. Consiste en recolectar materiales usados y procesarlos para crear nuevos productos, reduciendo contaminación y ahorrando energía.</p>
+<p>También fomenta la educación ambiental y ayuda a generar empleo en la industria del reciclaje. Cada acción cuenta para un planeta más limpio y sostenible.</p>
+<img src="https://c.files.bbci.co.uk/29F4/production/_129704701_gettyimages-1363177318-1.jpg" alt="Reciclaje en acción" style="width:70%; border-radius:15px; margin-top:10px;">
+</section>
+
+<section id="3r">
+<h2>🌱 Las 3R: Reducir, Reutilizar y Reciclar</h2>
+<div class="tarjetas">
+<div class="tarjeta"><h3>Reducir</h3><p>Evitar el uso excesivo de materiales y productos innecesarios. Prioriza productos duraderos y reutilizables, evitando desechables. <br> Ejemplo: Usar botellas reutilizables.</p></div>
+<div class="tarjeta"><h3>Reutilizar</h3><p>Dar un segundo uso a objetos: frascos, botellas o ropa vieja. Esto disminuye la cantidad de residuos y potencia la creatividad.<br> Ejemplo: Convertir frascos en organizadores.</p></div>
+<div class="tarjeta"><h3>Reciclar</h3><p>Procesar materiales usados para convertirlos en nuevos productos: plástico, vidrio, papel y metal. Esto ahorra recursos naturales y energía.<br> Ejemplo: Separar papel y cartón para reciclaje.</p></div>
+</div>
+<img src="https://i.pinimg.com/736x/c0/37/34/c037340bc64d65bdd48555006fdea211.jpg" alt="3R" style="width:70%; border-radius:15px; margin-top:15px;">
+</section>
+
+<section id="separacion">
+<h2>🗑️ Separación de la Basura</h2>
+<ul class="lista-basura">
+<li><b>Orgánica:</b> restos de comida, cáscaras, hojas. Se puede compostar para abono natural.</li>
+<li><b>Inorgánica reciclable:</b> plástico, vidrio, cartón, metal. Debe ser limpio y seco.</li>
+<li><b>No reciclable:</b> pañales, servilletas sucias, residuos peligrosos. Requieren disposición especial.</li>
+</ul>
+<p>Separar correctamente la basura facilita el reciclaje y evita contaminación del suelo y agua.</p>
+<img src="https://gestionbasura.com.mx/wp-content/uploads/2024/08/Contenedores-de-Basura-de-Reciclaje-4-contenedors-para-reciclaje-de-distintos-residuos.jpg">
+</section>
+
+<section id="colores">
+<h2>🎨 Colores de reciclaje</h2>
+<table class="tabla-colores">
+<tr><th>Color</th><th>Tipo</th><th>Ejemplo</th></tr>
+<tr><td style="background:#2E7D32;color:white;">Verde</td><td>Vidrio</td><td>Botellas, frascos</td></tr>
+<tr><td style="background:#0277BD;color:white;">Azul</td><td>Papel</td><td>Cajas, periódicos</td></tr>
+<tr><td style="background:#FBC02D;color:black;">Amarillo</td><td>Plásticos y latas</td><td>Botellas plásticas, latas</td></tr>
+<tr><td style="background:#F44336;color:white;">Rojo</td><td>Peligrosos</td><td>Pilas, aerosoles</td></tr>
+<tr><td style="background:#9C27B0;color:white;">Morado</td><td>Material electrónico</td><td>Celulares, cables</td></tr>
+</table>
+<img src="https://contenedoressatur.com/wp-content/uploads/2024/08/colores-reciclaje-scaled.jpg" alt="Colores reciclaje" style="width:70%; border-radius:15px; margin-top:10px;">
+</section>
+
+<section id="ideas">
+<h2>💡 Ideas para Reciclar en Casa</h2>
+<div class="tarjetas">
+<div class="tarjeta"><h3>Maceteros</h3><p>Convierte botellas en macetas para plantas o flores. También puedes decorar con pintura.</p></div>
+<div class="tarjeta"><h3>Organizadores</h3><p>Usa cajas y frascos para ordenar tu escritorio o cocina. Personaliza con etiquetas.</p></div>
+<div class="tarjeta"><h3>Juguetes</h3><p>Material reciclado puede convertirse en juegos o manualidades para niños, fomentando la creatividad.</p></div>
+</div>
+<img src="https://www.ideasimprescindibles.es/wp-content/uploads/2022/04/como-reciclar-en-casa-3.jpg" alt="Manualidades" style="width:70%; border-radius:15px; margin-top:15px;">
+</section>
+
+<section id="impacto">
+<h2>🌍 Impacto Comunitario</h2>
+<p>Si reciclamos correctamente, reducimos la contaminación, conservamos recursos y fomentamos hábitos responsables en la comunidad.</p>
+<p>El reciclaje genera conciencia ecológica, educa a las nuevas generaciones y promueve un estilo de vida sostenible.</p>
+<img src="https://cdn0.ecologiaverde.com/es/posts/0/9/0/impacto_ambiental_del_aumento_de_las_temperaturas_90_orig.jpg" alt="Impacto ambiental" style="width:70%; border-radius:15px; margin-top:10px;">
+</section>
+
+<section id="cuestionario">
+<h2>📝 Cuestionario</h2>
+<div id="preguntas"></div>
+<button onclick="finalizarCuestionario()">Finalizar</button>
+<div id="nota"></div>
+</section>
+
+<section id="sopa-letras">
+<h2>🧩 Sopa de Letras</h2>
+<ul id="palabras-lista"></ul>
+<div id="sopaContainer"></div>
+<div id="mensajeJuego" style="margin-top:20px;font-weight:bold;"></div>
+</section>
+
+<section id="informacion">
+  <h2>📌 Información de Contacto</h2>
+  <p><b>Ubicación:</b> 
+    <a href="https://maps.app.goo.gl/J4yra6zvYsDqHE9x8" target="_blank" 
+       style="color:#16a34a; text-decoration:underline;">
+      Barrio Minero, Avenida Transcontinental
+    </a>
+  </p>
+  <p><b>Teléfono:</b> 
+    <a href="tel:74691085" style="color:#16a34a; text-decoration:underline;">
+      74691085
+    </a>
+  </p>
+  <p><b>Correo electrónico:</b> 
+    <a href="mailto:callequirogaleonardocristofer1@gmail.com" 
+       style="color:#16a34a; text-decoration:underline;">
+      callequirogaleonardocristofer1@gmail.com
+    </a>
+  </p>
+  <p><b>Colegio:</b> Unidad Educativa Renata Preto De Brunelli</p>
+  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrBQUA1tUVH7jmVe_QCfU_Me4wlYM6ogeSAQ&s" 
+       alt="Información" style="width:70%; border-radius:15px; margin-top:10px;">
+</section>
+
+<footer>
+<p>Proyecto EcoAcción 🌱</p>
+</footer>
+
+<script>
+// Bienvenida
+function ingresar(){document.getElementById('bienvenida').style.display='none';document.getElementById('contenido').style.display='block';}
+
+// Pestañas
+function mostrarSeccion(id){
+    document.querySelectorAll('section').forEach(sec=>sec.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// Cuestionario ampliado e interactivo
+const preguntas=[
+  {pregunta:"¿Qué es reciclar?", opciones:["Convertir basura en energía","Convertir materiales usados en nuevos productos","Tirar basura"], correcta:1},
+  {pregunta:"¿Qué color es para vidrio?", opciones:["Verde","Azul","Amarillo"], correcta:0},
+  {pregunta:"Ejemplo de residuo orgánico:", opciones:["Botellas","Cáscaras","Plástico"], correcta:1},
+  {pregunta:"Una de las 3R es:", opciones:["Repetir","Reducir","Remplazar"], correcta:1},
+  {pregunta:"¿Qué es EcoAcción?", opciones:["Proyecto ambiental","Juego de computadora","Receta de cocina"], correcta:0},
+  {pregunta:"¿Qué color corresponde al papel y cartón?", opciones:["Azul","Rojo","Verde"], correcta:0},
+  {pregunta:"¿Qué tipo de residuo se considera peligroso?", opciones:["Papel usado","Pilas y aerosoles","Cáscaras de frutas"], correcta:1},
+  {pregunta:"¿Cuál de las siguientes acciones ayuda a reducir la contaminación?", opciones:["Tirar basura al suelo","Reutilizar envases","Quemar residuos"], correcta:1},
+  {pregunta:"¿Qué significa reducir?", opciones:["Usar menos recursos y evitar desperdicios","Tirar más basura","Hacer compras innecesarias"], correcta:0},
+  {pregunta:"¿Por qué es importante reciclar?", opciones:["Para cuidar el medio ambiente","Para generar más basura","Para gastar más energía"], correcta:0}
+];
+
+function cargarPreguntas(){
+    const container=document.getElementById('preguntas');
+    preguntas.forEach((q,i)=>{
+        const div=document.createElement('div');
+        div.classList.add("cuestionario");
+        div.innerHTML=`<p><b>${i+1}. ${q.pregunta}</b></p>` +
+        q.opciones.map((op,j)=>`<label><input type="radio" name="p${i}" value="${j}"> ${op}</label>`).join('');
+        container.appendChild(div);
+    });
+}
+
+function finalizarCuestionario(){
+    let nota=0;
+    preguntas.forEach((q,i)=>{
+        const opciones=document.querySelectorAll(`input[name=p${i}]`);
+        const seleccionada=document.querySelector(`input[name=p${i}]:checked`);
+        opciones.forEach((opt,j)=>{
+            if(j===q.correcta){
+                opt.parentElement.style.color="green"; // Correcta en verde
+                opt.parentElement.style.fontWeight="600";
+            } else {
+                opt.parentElement.style.color="red"; // Incorrecta en rojo
+            }
+        });
+        if(seleccionada && parseInt(seleccionada.value)===q.correcta) nota++;
+    });
+    document.getElementById('nota').innerText=`Tu puntaje: ${nota} / ${preguntas.length}`;
+    // Bloquear todas las opciones
+    document.querySelectorAll('input[type=radio]').forEach(r=>r.disabled=true);
+}
+
+document.addEventListener('DOMContentLoaded',cargarPreguntas);
+
+
+// Sopa de Letras Mejorada
+const sopaPalabras=["RECICLAR","VIDRIO","PAPEL","PLASTICO","ORGANICO","SEPARAR","REUTILIZAR","REDUCIR","CONTAMINAR","PLANETA","BOLSAECO","COMPOST"];
+const palabraColores = {
+    "RECICLAR":"#16a34a","VIDRIO":"#2E7D32","PAPEL":"#0277BD","PLASTICO":"#FBC02D",
+    "ORGANICO":"#F59E0B","SEPARAR":"#EF4444","REUTILIZAR":"#9C27B0","REDUCIR":"#10B981",
+    "CONTAMINAR":"#F97316","PLANETA":"#3B82F6","BOLSAECO":"#8B5CF6","COMPOST":"#D97706"
+};
+
+// Matriz de letras (horizontal y vertical completas)
+const sopaLetras = [
+["R","E","C","I","C","L","A","R","G","H","I","J","K","L","M","G","H"],
+["V","I","D","R","I","O","A","B","C","D","E","F","G","H","I","P","Q"],
+["P","A","P","E","L","J","K","L","M","N","O","P","Q","R","S","T","U"],
+["P","L","A","S","T","I","C","O","T","U","V","W","X","Y","Z","I","J"],
+["O","R","G","A","N","I","C","O","A","B","C","D","E","F","G","J","K"],
+["S","E","P","A","R","A","R","H","I","J","K","L","M","N","O","H","I"],
+["R","E","U","T","I","L","I","Z","A","R","P","Q","R","S","T","W","X"],
+["R","E","D","U","C","I","R","A","B","C","D","E","F","G","H","Y","Z"],
+["C","O","N","T","A","M","I","N","A","R","I","J","K","L","M","X","Y"],
+["P","L","A","N","E","T","A","S","T","U","V","W","X","Y","Z","F","G"],
+["B","O","L","S","A","E","C","O","A","B","C","D","H","I","G","A","B"],
+["C","O","M","P","O","S","T","H","I","J","K","L","M","N","O","H","I"]
+];
+
+function generarSopa(){
+    const container = document.getElementById("sopaContainer");
+    const lista = document.getElementById("palabras-lista");
+    let seleccionActual = [];
+    let palabraSeleccionada = "";
+
+    // Generar celdas
+    sopaLetras.forEach((fila, i)=>{
+        fila.forEach((letra, j)=>{
+            const celda = document.createElement("div");
+            celda.classList.add("celda");
+            celda.dataset.fila = i;
+            celda.dataset.col = j;
+            celda.innerText = letra;
+
+            celda.addEventListener("click", ()=>{
+                celda.style.backgroundColor = celda.style.backgroundColor==="orange"?"#e0f2f1":"orange";
+                if(celda.style.backgroundColor==="orange"){
+                    seleccionActual.push({letra,celda});
+                    palabraSeleccionada += letra;
+                } else {
+                    seleccionActual = seleccionActual.filter(obj => obj.celda !== celda);
+                    palabraSeleccionada = seleccionActual.map(obj => obj.letra).join("");
+                }
+
+                // Verificar palabras en cualquier dirección
+                sopaPalabras.forEach(palabra=>{
+                    if(palabraSeleccionada.includes(palabra) || palabraSeleccionada.includes(palabra.split('').reverse().join(''))){
+                        const color = palabraColores[palabra] || "#16a34a";
+                        seleccionActual.forEach(obj=>{
+                            obj.celda.style.backgroundColor = color;
+                            obj.celda.classList.add("encontrada");
+                        });
+                        Array.from(lista.children).forEach(li=>{
+                            if(li.innerText === palabra){
+                                li.classList.add("encontrada");
+                                li.style.backgroundColor = color;
+                            }
+                        });
+                        palabraSeleccionada = "";
+                        seleccionActual = [];
+                        // Comprobar si se encontraron todas
+                        if(document.querySelectorAll("#palabras-lista li.encontrada").length === sopaPalabras.length){
+                            document.getElementById("mensajeJuego").innerText="🎉 ¡Felicidades! Encontraste todas las palabras.";
+                        }
+                    }
+                });
+            });
+
+            container.appendChild(celda);
+        });
+    });
+
+    // Lista de palabras
+    sopaPalabras.forEach(p=>{
+        const li = document.createElement("li");
+        li.innerText = p;
+        lista.appendChild(li);
+    });
+}
+
+document.addEventListener("DOMContentLoaded", generarSopa);
+</script>
+
+</body>
+</html>
